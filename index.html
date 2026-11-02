@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bảng Điểm Điện Tử Vovinam - Việt Võ Đạo</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Điểm Vovinam">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="apple-touch-icon" href="logo.jpg">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 8px 14px;
+        }
+
+        /* 1. TIÊU ĐỀ GIẢI ĐẤU PHÍA TRÊN (MÀU VÀNG) */
+        .tournament-header {
+            text-align: center;
+            padding: 4px 0 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .header-logo {
+            width: 38px;
+            height: 50px;
+            object-fit: fill;
+            border-radius: 3px 3px 50% 50% / 3px 3px 42% 42%;
+        }
+
+        .tournament-title {
+            color: #d4e157;
+            font-size: clamp(1.1rem, 2.5vw, 1.85rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1.25;
+            cursor: pointer;
+        }
+
+        /* 2. HÀNG ĐỒNG HỒ TRUNG TÂM & THÔNG TIN TRẬN ĐẤU */
+        .top-info-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            margin-bottom: 6px;
+            gap: 10px;
+        }
+
+        .match-number {
+            font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+            color: #e5e7eb;
+            padding-left: 10%;
+            cursor: pointer;
+        }
+
+        /* HỘP ĐỒNG HỒ TRẮNG GIỐNG BẢNG ĐIỂM GIẢI ĐẤU */
+        .clock-white-box {
+            background-color: #e8eef5;
+            color: #1e293b;
+            min-width: 230px;
+            padding: 4px 22px 6px;
+            text-align: center;
+            border: 2px solid #cbd5e1;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+            cursor: pointer;
+        }
+
+        .round-title {
+            font-size: clamp(1.1rem, 2vw, 1.55rem);
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1.15;
+        }
+
+        .round-title.break-mode {
+            color: #d97706;
+        }
+
+        .round-title.overtime-mode {
+            color: #dc2626;
+        }
+
+        .timer-digits {
+            font-size: clamp(2.6rem, 5.2vw, 4.4rem);
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 2px;
+        }
+
+        .timer-digits.urgent {
+            color: #dc2626;
+            animation: pulseUrgent 0.5s infinite alternate;
+        }
+
+        @keyframes pulseUrgent {
+            from { opacity: 1; }
+            to { opacity: 0.45; }
+        }
+
+        .weight-category {
+            font-size: clamp(0.9rem, 1.6vw, 1.25rem);
+            color: #e5e7eb;
+            text-align: center;
+            line-height: 1.3;
+            cursor: pointer;
+        }
+
+        /* 3. KHU VỰC BẢNG ĐIỂM CHÍNH (CỘT RF TRÁI - ĐỎ - XANH - CỘT RF PHẢI) */
+        .arena-board {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 95px 1fr 1fr 95px;
+            align-items: stretch;
+            min-height: 320px;
+        }
+
+        /* CỘT GIÁM ĐỊNH RF 1..5 HAI BÊN */
+        .rf-column {
+            background-color: #000000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 12px;
+            padding: 8px 6px;
+        }
+
+        .rf-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: clamp(1rem, 1.9vw, 1.45rem);
+            font-weight: 700;
+        }
+
+        .rf-label {
+            color: #c0ca33;
+        }
+
+        .rf-num {
+            color: #e2e8f0;
+        }
+
+        /* Ô ĐIỂM ĐỎ & XANH SÁT NHAU Ở GIỮA */
+        .score-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            padding: 16px 20px 14px;
+            border: 2px solid transparent;
+            transition: filter 0.2s;
+        }
+
+        .panel-red {
+            background-color: #c91414;
+        }
+
+        .panel-blue {
+            background-color: #0d47e1;
+        }
+
+        /* HIỆU ỨNG CHỚP DỨT KHOÁT CHUẨN BẢNG ĐIỆN TỬ (STEP-END: BẬT/TẮT NGAY LẬP TỨC KHÔNG MỜ DẦN) */
+        @keyframes winnerBlinkRed {
+            0%, 100% {
+                background-color: #c91414;
+            }
+            50% {
+                background-color: #ffffff;
+            }
+        }
+
+        @keyframes winnerBlinkBlue {
+            0%, 100% {
+                background-color: #0d47e1;
+            }
+            50% {
+                background-color: #ffffff;
+            }
+        }
+
+        @keyframes winnerTextBlack {
+            0%, 100% { color: #ffffff; }
+            50% { color: #000000; }
+        }
+
+        .panel-red.winner-active {
+            animation: winnerBlinkRed 1s infinite step-end;
+            z-index: 5;
+        }
+
+        .panel-blue.winner-active {
+            animation: winnerBlinkBlue 1s infinite step-end;
+            z-index: 5;
+        }
+
+        .winner-active .main-score-number,
+        .winner-active .athlete-name,
+        .winner-active .athlete-unit {
+            animation: winnerTextBlack 1s infinite step-end;
+        }
+
+        .main-score-number {
+            font-size: clamp(7.5rem, 19vw, 15.5rem);
+            font-weight: 700;
+            color: #f8fafc;
+            text-align: center;
+            line-height: 1;
+            margin: auto 0;
+            font-variant-numeric: tabular-nums;
+            transition: transform 0.12s ease;
+        }
+
+        .score-bump {
+            transform: scale(1.12);
+        }
+
+        /* CỤM TÊN VĐV + ĐƠN VỊ + CỜ ĐỎ SAO VÀNG Ở GÓC DƯỚI Ô ĐIỂM */
+        .athlete-footer {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 6px;
+        }
+
+        .vn-flag {
+            width: 56px;
+            height: 36px;
+            background-color: #da251d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            flex-shrink: 0;
+        }
+
+        .vn-flag span {
+            color: #ffff00;
+            font-size: 1.35rem;
+            line-height: 1;
+        }
+
+        .athlete-info {
+            flex: 1;
+            text-align: center;
+            padding-right: 40px;
+        }
+
+        .athlete-name {
+            font-size: clamp(1.25rem, 2.3vw, 1.9rem);
+            font-weight: 700;
+            color: #ffffff;
+            cursor: pointer;
+            line-height: 1.2;
+        }
+
+        .athlete-unit {
+            font-size: clamp(0.95rem, 1.6vw, 1.35rem);
+            color: #f1f5f9;
+            cursor: pointer;
+            margin-top: 2px;
+        }
+
+        /* 4. HÀNG THÔNG SỐ DƯỚI (REMIND / WARNED / MEDICAL & NÚT THE END) */
+        .bottom-status-bar {
+            display: grid;
+            grid-template-columns: 95px 1fr 1fr 95px;
+            padding-top: 6px;
+            align-items: start;
+        }
+
+        .foul-stats-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 4px 16px 4px 4px;
+            font-size: clamp(0.82rem, 1.35vw, 1.05rem);
+            color: #e2e8f0;
+        }
+
+        .foul-list {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .foul-item {
+            cursor: pointer;
+        }
+
+        .foul-item:hover {
+            color: #fde047;
+        }
+
+        .bout-indicators {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .white-squares {
+            display: flex;
+            gap: 6px;
+        }
+
+        .sq-box {
+            width: 18px;
+            height: 18px;
+            background-color: #e2e8f0;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .sq-box.active-sq {
+            background-color: #fde047;
+        }
+
+        .end-corner {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            padding-left: 6px;
+        }
+
+        .btn-the-end {
+            width: 100%;
+            background-color: #4caf50;
+            color: #ffffff;
+            border: 1px solid #81c784;
+            padding: 10px 4px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-the-end.ended-mode {
+            background-color: #d97706;
+            border-color: #fcd34d;
+        }
+
+        .sub-red-label {
+            color: #b91c1c;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* 5. BẢNG ĐIỀU KHIỂN THAO TÁC TRỌNG TÀI (CỘNG TRỪ ĐIỂM, ĐỒNG HỒ, HIỆP, CHUÔNG, RESET) */
+        .operator-console {
+            margin-top: 8px;
+            background-color: #111827;
+            border: 1px solid #374151;
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: grid;
+            grid-template-columns: 1fr 1.3fr 1fr;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .side-op-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-op-score {
+            flex: 1;
+            padding: 12px 6px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            color: #ffffff;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-op-score:active:not(:disabled) {
+            transform: scale(0.96);
+        }
+
+        .btn-op-score:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .btn-red-op {
+            background-color: #b91c1c;
+        }
+
+        .btn-blue-op {
+            background-color: #1d4ed8;
+        }
+
+        .btn-minus-op {
+            flex: 0.65;
+            background-color: #374151;
+            font-size: 1.1rem;
+        }
+
+        .center-op-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .op-row {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-op {
+            flex: 1;
+            padding: 8px 10px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            border: 1px solid #4b5563;
+            border-radius: 6px;
+            background-color: #1f2937;
+            color: #e5e7eb;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-op.active-pill {
+            background-color: #ffd700;
+            color: #000000;
+            border-color: #ffd700;
+        }
+
+        .btn-op.btn-start-op {
+            background-color: #10b981;
+            color: #ffffff;
+            border-color: #059669;
+        }
+
+        .btn-op.btn-pause-op {
+            background-color: #f59e0b;
+            color: #000000;
+        }
+
+        .btn-op.btn-bell-op {
+            background-color: #6366f1;
+            color: #ffffff;
+        }
+
+        .btn-op.btn-reset-op {
+            background-color: #374151;
+            color: #f87171;
+            border-color: #ef4444;
+        }
+
+        .time-input-mini {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #e5e7eb;
+            background: #1f2937;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid #374151;
+        }
+
+        .time-input-mini input {
+            width: 68px;
+            height: 36px;
+            background: #000;
+            color: #ffd700;
+            border: 1px solid #6b7280;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1.05rem; /* >= 16px để iPhone không tự động zoom màn hình khi bấm vào nhập số */
+            font-weight: 800;
+            padding: 4px;
+        }
+
+        /* RESPONSIVE CHO ĐIỆN THOẠI (CẦM DỌC) */
+        @media (max-width: 900px) and (orientation: portrait) {
+            body {
+                padding: 4px 6px;
+            }
+            .arena-board {
+                grid-template-columns: 44px 1fr 1fr 44px;
+                min-height: 200px;
+            }
+            .bottom-status-bar {
+                grid-template-columns: 44px 1fr 1fr 64px;
+            }
+            .rf-row {
+                font-size: 0.72rem;
+            }
+            .clock-white-box {
+                min-width: 150px;
+                padding: 2px 12px 4px;
+            }
+            .score-panel {
+                padding: 10px 8px;
+            }
+            .vn-flag {
+                width: 34px;
+                height: 22px;
+            }
+            .vn-flag span {
+                font-size: 0.85rem;
+            }
+            .athlete-info {
+                padding-right: 0;
+            }
+            .operator-console {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                padding: 8px;
+            }
+            .center-op-controls {
+                grid-column: 1 / -1;
+                order: -1;
+            }
+        }
+
+        /* RESPONSIVE KHI XOAY NGANG ĐIỆN THOẠI (LANDSCAPE): GÓI GỌN 100% TRONG 1 MÀN HÌNH */
+        @media (max-height: 540px) and (orientation: landscape) {
+            body {
+                padding: 2px 8px;
+                height: 100dvh;
+            }
+            .tournament-header {
+                padding: 1px 0 2px;
+            }
+            .header-logo {
+                width: 22px;
+                height: 28px;
+            }
+            .tournament-title {
+                font-size: 0.9rem;
+            }
+            .top-info-row {
+                margin-bottom: 3px;
+            }
+            .match-number, .weight-category {
+                font-size: 0.75rem;
+                line-height: 1.15;
+            }
+            .clock-white-box {
+                min-width: 135px;
+                padding: 1px 10px 2px;
+            }
+            .round-title {
+                font-size: 0.8rem;
+            }
+            .timer-digits {
+                font-size: 1.75rem;
+            }
+            .arena-board {
+                grid-template-columns: 46px 1fr 1fr 46px;
+                min-height: 0;
+                flex: 1;
+            }
+            .rf-column {
+                gap: 3px;
+                padding: 2px 4px;
+            }
+            .rf-row {
+                font-size: 0.72rem;
+            }
+            .score-panel {
+                padding: 4px 10px;
+            }
+            .main-score-number {
+                font-size: clamp(3.6rem, 24vh, 5.8rem);
+            }
+            .athlete-footer {
+                gap: 8px;
+                margin-top: 2px;
+            }
+            .vn-flag {
+                width: 30px;
+                height: 20px;
+            }
+            .vn-flag span {
+                font-size: 0.8rem;
+            }
+            .athlete-info {
+                padding-right: 0;
+            }
+            .athlete-name {
+                font-size: 0.9rem;
+            }
+            .athlete-unit {
+                font-size: 0.72rem;
+                margin-top: 0;
+            }
+            .bottom-status-bar {
+                grid-template-columns: 46px 1fr 1fr 68px;
+                padding-top: 2px;
+            }
+            .foul-stats-box {
+                padding: 1px 8px 1px 2px;
+                font-size: 0.65rem;
+            }
+            .foul-list {
+                flex-direction: row;
+                gap: 8px;
+            }
+            .bout-indicators {
+                flex-direction: row;
+                align-items: center;
+                gap: 6px;
+            }
+            .sq-box {
+                width: 11px;
+                height: 11px;
+            }
+            .btn-the-end {
+                padding: 4px 2px;
+                font-size: 0.68rem;
+            }
+            .sub-red-label {
+                display: none;
+            }
+            .operator-console {
+                margin-top: 3px;
+                padding: 4px 6px;
+                grid-template-columns: 1fr 1.55fr 1fr;
+                gap: 6px;
+            }
+            .side-op-controls {
+                gap: 4px;
+            }
+            .btn-op-score {
+                padding: 6px 2px;
+                font-size: 0.9rem;
+                border-radius: 6px;
+            }
+            .btn-minus-op {
+                font-size: 0.85rem;
+            }
+            .center-op-controls {
+                gap: 3px;
+            }
+            .op-row {
+                gap: 4px;
+                flex-wrap: nowrap;
+            }
+            .btn-op {
+                padding: 4px 5px;
+                font-size: 0.68rem;
+            }
+            .time-input-mini {
+                padding: 2px 6px;
+                gap: 4px;
+                font-size: 0.7rem;
+            }
+            .time-input-mini input {
+                width: 46px;
+                height: 24px;
+                font-size: 1rem;
+                padding: 1px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. TIÊU ĐỀ GIẢI ĐẤU MÀU VÀNG PHÍA TRÊN -->
+    <header class="tournament-header">
+        <div class="header-brand">
+            <img id="headerLogoImg" src="logo.jpg" alt="Logo Vovinam" class="header-logo">
+            <div class="tournament-title" onclick="editText(this)">
+                VOVINAM VIỆT VÕ ĐẠO
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. HÀNG ĐỒNG HỒ TRẮNG GIỮA & THÔNG TIN TRẬN ĐẤU -->
+    <section class="top-info-row">
+        <div class="match-number" onclick="editText(this)">Match: 1</div>
+
+        <div class="clock-white-box" onclick="toggleTimer()">
+            <div id="roundTitleDisplay" class="round-title">Round 1</div>
+            <div id="timerDisplay" class="timer-digits">02:00</div>
+        </div>
+
+        <div class="weight-category" onclick="editText(this)">
+            Chung kết<br>Đối kháng
+        </div>
+    </section>
+
+    <!-- 3. BẢNG ĐIỂM TRUNG TÂM GIỐNG HỆT GIAO DIỆN GIẢI ĐẤU -->
+    <main class="arena-board">
+        <!-- Cột RF bên trái -->
+        <aside class="rf-column">
+            <div class="rf-row"><span class="rf-label">RF</span><span class="rf-num">1</span><span class="rf-num">1</span></div>
+            <div class="rf-row"><span class="rf-label">RF</span><span class="rf-num">2</span><span class="rf-num">2</span></div>
+            <div class="rf-row"><span class="rf-label">RF</span><span class="rf-num">3</span><span class="rf-num">3</span></div>
+            <div class="rf-row"><span class="rf-label">RF</span><span class="rf-num">4</span><span class="rf-num">4</span></div>
+            <div class="rf-row"><span class="rf-label">RF</span><span class="rf-num">5</span><span class="rf-num">5</span></div>
+        </aside>
+
+        <!-- Ô Giáp Đỏ -->
+        <section id="panelRed" class="score-panel panel-red" onclick="forceWinnerOnEnd('red', event)">
+            <div id="scoreRed" class="main-score-number">0</div>
+            <div class="athlete-footer">
+                <div class="vn-flag"><span>★</span></div>
+                <div class="athlete-info">
+                    <div id="nameRed" class="athlete-name" onclick="editText(this)">Giáp Đỏ</div>
+                    <div id="unitRed" class="athlete-unit" onclick="editText(this)">Đơn vị Đỏ</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ô Giáp Xanh -->
+        <section id="panelBlue" class="score-panel panel-blue" onclick="forceWinnerOnEnd('blue', event)">
+            <div id="scoreBlue" class="main-score-number">0</div>
+            <div class="athlete-footer">
+                <div class="vn-flag"><span>★</span></div>
+                <div class="athlete-info">
+                    <div id="nameBlue" class="athlete-name" onclick="editText(this)">Giáp Xanh</div>
+                    <div id="unitBlue" class="athlete-unit" onclick="editText(this)">Đơn vị Xanh</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cột RF bên phải -->
+        <aside class="rf-column">
+            <div class="rf-row"><span class="rf-num">1</span><span class="rf-num">1</span><span class="rf-label">RF</span></div>
+            <div class="rf-row"><span class="rf-num">2</span><span class="rf-num">2</span><span class="rf-label">RF</span></div>
+            <div class="rf-row"><span class="rf-num">3</span><span class="rf-num">3</span><span class="rf-label">RF</span></div>
+            <div class="rf-row"><span class="rf-num">4</span><span class="rf-num">4</span><span class="rf-label">RF</span></div>
+            <div class="rf-row"><span class="rf-num">5</span><span class="rf-num">5</span><span class="rf-label">RF</span></div>
+        </aside>
+    </main>
+
+    <!-- 4. HÀNG THÔNG SỐ LỖI (REMIND / WARNED / MEDICAL) & NÚT THE END GÓC DƯỚI PHẢI -->
+    <section class="bottom-status-bar">
+        <div></div>
+
+        <!-- Thông số bên Đỏ -->
+        <div class="foul-stats-box">
+            <div class="foul-list">
+                <div class="foul-item" onclick="incrementCounter('remindRed')">Remind: <span id="remindRed">0</span></div>
+                <div class="foul-item" onclick="incrementCounter('warnedRed')">Warned: <span id="warnedRed">0</span></div>
+                <div class="foul-item" onclick="incrementCounter('medicalRed')">Medical: <span id="medicalRed">0</span></div>
+            </div>
+            <div class="bout-indicators">
+                <div class="white-squares">
+                    <span class="sq-box" onclick="this.classList.toggle('active-sq')"></span>
+                    <span class="sq-box" onclick="this.classList.toggle('active-sq')"></span>
+                    <span class="sq-box" onclick="this.classList.toggle('active-sq')"></span>
+                </div>
+                <div>0 bout/ Rd</div>
+            </div>
+        </div>
+
+        <!-- Thông số bên Xanh -->
+        <div class="foul-stats-box">
+            <div class="foul-list">
+                <div class="foul-item" onclick="incrementCounter('remindBlue')">Remind: <span id="remindBlue">0</span></div>
+                <div class="foul-item" onclick="incrementCounter('warnedBlue')">Warned: <span id="warnedBlue">0</span></div>
+                <div class="foul-item" onclick="incrementCounter('medicalBlue')">Medical: <span id="medicalBlue">0</span></div>
+            </div>
+            <div class="bout-indicators">
+                <div class="white-squares">
+                    <span class="sq-box" onclick="this.classList.toggle('active-sq')"></span>
+                    <span class="sq-box" onclick="this.classList.toggle('active-sq')"></span>
+                    <span class="sq-box" onclick="this.classList.toggle('active-sq')"></span>
+                </div>
+                <div>0 bout/ Rd</div>
+            </div>
+        </div>
+
+        <!-- Nút THE END màu xanh lá cây góc dưới phải giống hệt ảnh -->
+        <div class="end-corner">
+            <button id="btnEndMatch" class="btn-the-end" onclick="endMatch()">THE END</button>
+            <div class="sub-red-label">VOVINAM</div>
+        </div>
+    </section>
+
+    <!-- 5. BẢNG NÚT BẤM ĐIỀU KHIỂN DÀNH CHO TRỌNG TÀI -->
+    <section class="operator-console">
+        <!-- Nút điểm Đỏ -->
+        <div class="side-op-controls">
+            <button class="btn-op-score btn-red-op" onclick="changeScore('red', 1)">+1</button>
+            <button class="btn-op-score btn-red-op" onclick="changeScore('red', 2)">+2</button>
+            <button class="btn-op-score btn-minus-op" onclick="changeScore('red', -1)">-1</button>
+            <button class="btn-op-score btn-minus-op" onclick="changeScore('red', -2)">-2</button>
+            <button class="btn-op-score btn-red-op" style="flex:0.75; font-size:0.95rem; background:#7f1d1d; border-color:#ffd700; color:#ffd700;" onclick="endMatchByKO('red')" title="Giáp Đỏ thắng tuyệt đối (Knock-out / Bỏ cuộc / Truất quyền)">KO</button>
+        </div>
+
+        <!-- Cụm điều khiển Hiệp, Giờ, Chuông, Reset -->
+        <div class="center-op-controls">
+            <div class="op-row">
+                <button id="roundPill1" class="btn-op active-pill" onclick="selectRound(1)">R1</button>
+                <button id="roundPill2" class="btn-op" onclick="selectRound(2)">R2</button>
+                <button id="roundPill3" class="btn-op" onclick="selectRound(3)">R3</button>
+                <button id="roundPill4" class="btn-op" onclick="selectRound(4)">⚡ Phụ</button>
+                <button id="tabFight" class="btn-op active-pill" onclick="switchMode('fight')">Đấu</button>
+                <button id="tabBreak" class="btn-op" onclick="switchMode('break')">Nghỉ</button>
+            </div>
+            <div class="op-row">
+                <button id="btnStartPause" class="btn-op btn-start-op" onclick="toggleTimer()">▶ BẮT ĐẦU</button>
+                <button class="btn-op btn-bell-op" onclick="playGong('single')">🔔 CHUÔNG</button>
+                <button class="btn-op btn-reset-op" onclick="resetMatch()">🔄 RESET</button>
+                <div class="time-input-mini">
+                    <span>Đấu:</span>
+                    <input type="number" id="fightSecondsInput" value="120" min="5" max="600" onchange="updateConfiguredTime()">
+                    <span>Nghỉ:</span>
+                    <input type="number" id="breakSecondsInput" value="60" min="5" max="300" onchange="updateConfiguredTime()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Nút điểm Xanh -->
+        <div class="side-op-controls">
+            <button class="btn-op-score btn-blue-op" onclick="changeScore('blue', 1)">+1</button>
+            <button class="btn-op-score btn-blue-op" onclick="changeScore('blue', 2)">+2</button>
+            <button class="btn-op-score btn-minus-op" onclick="changeScore('blue', -1)">-1</button>
+            <button class="btn-op-score btn-minus-op" onclick="changeScore('blue', -2)">-2</button>
+            <button class="btn-op-score btn-blue-op" style="flex:0.75; font-size:0.95rem; background:#1e3a8a; border-color:#ffd700; color:#ffd700;" onclick="endMatchByKO('blue')" title="Giáp Xanh thắng tuyệt đối (Knock-out / Bỏ cuộc / Truất quyền)">KO</button>
+        </div>
+    </section>
+
+    <script>
+        let scoreRed = 0;
+        let scoreBlue = 0;
+        let currentRound = 1;
+        let currentMode = 'fight';
+        let timeLeft = 120;
+        let timerInterval = null;
+        let isRunning = false;
+        let isMatchEnded = false;
+        let savedStateBeforeEnd = null;
+
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playGong(type = 'single') {
+            initAudio();
+            const hits = type === 'triple' ? 3 : 1;
+            const spacing = 0.42;
+
+            for (let i = 0; i < hits; i++) {
+                const startTime = audioCtx.currentTime + i * spacing;
+
+                const oscFundamental = audioCtx.createOscillator();
+                const oscHarmonic1 = audioCtx.createOscillator();
+                const oscHarmonic2 = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscFundamental.type = 'sine';
+                oscFundamental.frequency.setValueAtTime(520, startTime);
+
+                oscHarmonic1.type = 'triangle';
+                oscHarmonic1.frequency.setValueAtTime(1040, startTime);
+
+                oscHarmonic2.type = 'sine';
+                oscHarmonic2.frequency.setValueAtTime(1560, startTime);
+
+                gainNode.gain.setValueAtTime(0.001, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.9, startTime + 0.02);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + 1.8);
+
+                oscFundamental.connect(gainNode);
+                oscHarmonic1.connect(gainNode);
+                oscHarmonic2.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscFundamental.start(startTime);
+                oscHarmonic1.start(startTime);
+                oscHarmonic2.start(startTime);
+
+                oscFundamental.stop(startTime + 1.85);
+                oscHarmonic1.stop(startTime + 1.85);
+                oscHarmonic2.stop(startTime + 1.85);
+            }
+        }
+
+        function getRoundLabel() {
+            if (currentMode === 'break') {
+                return 'Break';
+            }
+            if (currentRound <= 3) {
+                return `Round ${currentRound}`;
+            }
+            const otNum = currentRound - 3;
+            return otNum === 1 ? 'Extra Rd' : `Extra Rd ${otNum}`;
+        }
+
+        function updateRoundUI() {
+            for (let r = 1; r <= 3; r++) {
+                const pill = document.getElementById(`roundPill${r}`);
+                if (r === currentRound) {
+                    pill.classList.add('active-pill');
+                } else {
+                    pill.classList.remove('active-pill');
+                }
+            }
+            const otPill = document.getElementById('roundPill4');
+            if (currentRound >= 4) {
+                otPill.classList.add('active-pill');
+                const otNum = currentRound - 3;
+                otPill.textContent = otNum === 1 ? '⚡ Phụ' : `⚡ Phụ ${otNum}`;
+            } else {
+                otPill.classList.remove('active-pill');
+                otPill.textContent = '⚡ Phụ';
+            }
+
+            const titleEl = document.getElementById('roundTitleDisplay');
+            titleEl.textContent = getRoundLabel();
+            titleEl.className = 'round-title';
+            if (currentMode === 'break') {
+                titleEl.classList.add('break-mode');
+            } else if (currentRound >= 4) {
+                titleEl.classList.add('overtime-mode');
+            }
+        }
+
+        function selectRound(roundNumber) {
+            if (isMatchEnded) return;
+            pauseTimer();
+            currentRound = roundNumber;
+            switchMode('fight');
+        }
+
+        function changeScore(side, delta) {
+            if (isMatchEnded) return;
+
+            if (side === 'red') {
+                scoreRed = scoreRed + delta;
+                const el = document.getElementById('scoreRed');
+                el.textContent = scoreRed;
+                animateScore(el);
+            } else {
+                scoreBlue = scoreBlue + delta;
+                const el = document.getElementById('scoreBlue');
+                el.textContent = scoreBlue;
+                animateScore(el);
+            }
+
+            // Hiệp phụ: Có điểm chênh lệch là kết thúc ngay lập tức
+            if (currentRound >= 4 && scoreRed !== scoreBlue) {
+                endMatch(true);
+                return;
+            }
+
+            // Cách biệt >= 10 điểm: Kết thúc ngay lập tức
+            const scoreDiff = Math.abs(scoreRed - scoreBlue);
+            if (scoreDiff >= 10) {
+                endMatch(true);
+                return;
+            }
+        }
+
+        function animateScore(element) {
+            element.classList.remove('score-bump');
+            void element.offsetWidth;
+            element.classList.add('score-bump');
+            setTimeout(() => element.classList.remove('score-bump'), 150);
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function updateTimerDisplay() {
+            const display = document.getElementById('timerDisplay');
+            display.textContent = formatTime(timeLeft);
+
+            if (timeLeft <= 10 && timeLeft > 0 && isRunning) {
+                display.classList.add('urgent');
+            } else {
+                display.classList.remove('urgent');
+            }
+        }
+
+        function updateConfiguredTime() {
+            if (isRunning) return;
+            const fightSecs = parseInt(document.getElementById('fightSecondsInput').value, 10) || 120;
+            const breakSecs = parseInt(document.getElementById('breakSecondsInput').value, 10) || 60;
+            timeLeft = currentMode === 'fight' ? fightSecs : breakSecs;
+            updateTimerDisplay();
+        }
+
+        function switchMode(mode) {
+            pauseTimer();
+            currentMode = mode;
+
+            const tabFight = document.getElementById('tabFight');
+            const tabBreak = document.getElementById('tabBreak');
+            const btn = document.getElementById('btnStartPause');
+
+            if (mode === 'fight') {
+                tabFight.classList.add('active-pill');
+                tabBreak.classList.remove('active-pill');
+                timeLeft = parseInt(document.getElementById('fightSecondsInput').value, 10) || 120;
+            } else {
+                tabFight.classList.remove('active-pill');
+                tabBreak.classList.add('active-pill');
+                timeLeft = parseInt(document.getElementById('breakSecondsInput').value, 10) || 60;
+            }
+
+            btn.innerHTML = '▶ BẮT ĐẦU';
+            btn.className = 'btn-op btn-start-op';
+
+            updateRoundUI();
+            updateTimerDisplay();
+        }
+
+        function toggleTimer() {
+            if (isMatchEnded) return;
+
+            if (!isRunning) {
+                startTimer(true);
+            } else {
+                pauseTimer();
+            }
+        }
+
+        function startTimer(shouldRingStartBell = true) {
+            if (timeLeft <= 0) {
+                updateConfiguredTime();
+            }
+
+            isRunning = true;
+            if (shouldRingStartBell) {
+                playGong('single');
+            }
+
+            const btn = document.getElementById('btnStartPause');
+            btn.innerHTML = '⏸ TẠM DỪNG';
+            btn.className = 'btn-op btn-pause-op';
+
+            timerInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateTimerDisplay();
+                }
+
+                if (timeLeft === 0) {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function handleTimeOut() {
+            if (currentMode === 'fight') {
+                if (currentRound < 3) {
+                    playGong('triple');
+                    switchMode('break');
+                    startTimer(false);
+                } else {
+                    if (scoreRed !== scoreBlue) {
+                        endMatch(true);
+                    } else {
+                        playGong('triple');
+                        switchMode('break');
+                        startTimer(false);
+                    }
+                }
+            } else {
+                playGong('triple');
+                currentRound = currentRound + 1;
+                switchMode('fight');
+            }
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            const btn = document.getElementById('btnStartPause');
+            btn.innerHTML = '▶ TIẾP TỤC';
+            btn.className = 'btn-op btn-start-op';
+            document.getElementById('timerDisplay').classList.remove('urgent');
+        }
+
+        function resumeEndedMatch() {
+            isMatchEnded = false;
+
+            const panelRed = document.getElementById('panelRed');
+            const panelBlue = document.getElementById('panelBlue');
+            const btnStartPause = document.getElementById('btnStartPause');
+            const btnEnd = document.getElementById('btnEndMatch');
+
+            panelRed.classList.remove('winner-active');
+            panelBlue.classList.remove('winner-active');
+
+            document.querySelectorAll('.btn-op-score').forEach(b => b.disabled = false);
+
+            if (btnEnd) {
+                btnEnd.textContent = 'THE END';
+                btnEnd.classList.remove('ended-mode');
+            }
+
+            if (savedStateBeforeEnd) {
+                currentRound = savedStateBeforeEnd.currentRound;
+                currentMode = savedStateBeforeEnd.currentMode;
+                timeLeft = savedStateBeforeEnd.timeLeft;
+                updateRoundUI();
+                updateTimerDisplay();
+            }
+
+            btnStartPause.innerHTML = timeLeft > 0 ? '▶ TIẾP TỤC' : '▶ BẮT ĐẦU';
+            btnStartPause.className = 'btn-op btn-start-op';
+        }
+
+        function endMatch(isAutoEnd = false, forcedWinner = null) {
+            if (isMatchEnded && !isAutoEnd && !forcedWinner) {
+                resumeEndedMatch();
+                return;
+            }
+
+            if (!isMatchEnded) {
+                savedStateBeforeEnd = {
+                    currentRound: currentRound,
+                    currentMode: currentMode,
+                    timeLeft: timeLeft
+                };
+            }
+
+            clearInterval(timerInterval);
+            isRunning = false;
+            isMatchEnded = true;
+
+            playGong('triple');
+
+            const panelRed = document.getElementById('panelRed');
+            const panelBlue = document.getElementById('panelBlue');
+            const btn = document.getElementById('btnStartPause');
+            const btnEnd = document.getElementById('btnEndMatch');
+
+            btn.innerHTML = '▶ BẮT ĐẦU';
+            btn.className = 'btn-op btn-start-op';
+            document.getElementById('timerDisplay').classList.remove('urgent');
+
+            if (btnEnd) {
+                btnEnd.textContent = '↩ TIẾP TỤC';
+                btnEnd.classList.add('ended-mode');
+            }
+
+            panelRed.classList.remove('winner-active');
+            panelBlue.classList.remove('winner-active');
+
+            document.querySelectorAll('.btn-op-score').forEach(b => b.disabled = true);
+
+            if (forcedWinner === 'red') {
+                panelRed.classList.add('winner-active');
+            } else if (forcedWinner === 'blue') {
+                panelBlue.classList.add('winner-active');
+            } else if (scoreRed > scoreBlue) {
+                panelRed.classList.add('winner-active');
+            } else if (scoreBlue > scoreRed) {
+                panelBlue.classList.add('winner-active');
+            } else {
+                panelRed.classList.add('winner-active');
+                panelBlue.classList.add('winner-active');
+            }
+        }
+
+        // Kết thúc trận đấu ngay lập tức khi có Knock-out / Bỏ cuộc / Truất quyền (bất kể tỉ số hiện tại)
+        function endMatchByKO(winnerSide) {
+            endMatch(true, winnerSide);
+        }
+
+        // Khi trận đấu đã kết thúc (đang nhấp nháy), có thể chạm trực tiếp vào ô điểm Đỏ hoặc Xanh để chuyển phần thắng sang bên đó
+        function forceWinnerOnEnd(side, event) {
+            if (!isMatchEnded) return;
+            if (event && (event.target.classList.contains('athlete-name') || event.target.classList.contains('athlete-unit'))) {
+                return;
+            }
+            const panelRed = document.getElementById('panelRed');
+            const panelBlue = document.getElementById('panelBlue');
+            panelRed.classList.remove('winner-active');
+            panelBlue.classList.remove('winner-active');
+            if (side === 'red') {
+                panelRed.classList.add('winner-active');
+            } else {
+                panelBlue.classList.add('winner-active');
+            }
+        }
+
+        function resetMatch() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            isMatchEnded = false;
+            savedStateBeforeEnd = null;
+
+            scoreRed = 0;
+            scoreBlue = 0;
+            currentRound = 1;
+
+            document.getElementById('scoreRed').textContent = '0';
+            document.getElementById('scoreBlue').textContent = '0';
+
+            ['remindRed', 'warnedRed', 'medicalRed', 'remindBlue', 'warnedBlue', 'medicalBlue'].forEach(id => {
+                document.getElementById(id).textContent = '0';
+            });
+            document.querySelectorAll('.sq-box').forEach(sq => sq.classList.remove('active-sq'));
+
+            document.getElementById('panelRed').classList.remove('winner-active');
+            document.getElementById('panelBlue').classList.remove('winner-active');
+
+            document.querySelectorAll('.btn-op-score').forEach(b => b.disabled = false);
+
+            const btn = document.getElementById('btnStartPause');
+            btn.innerHTML = '▶ BẮT ĐẦU';
+            btn.className = 'btn-op btn-start-op';
+
+            const btnEnd = document.getElementById('btnEndMatch');
+            if (btnEnd) {
+                btnEnd.textContent = 'THE END';
+                btnEnd.classList.remove('ended-mode');
+            }
+
+            switchMode('fight');
+        }
+
+        function editText(el) {
+            const current = el.innerText.replace(/\n/g, ' - ');
+            const val = prompt('Nhập nội dung mới:', current);
+            if (val !== null && val.trim() !== '') {
+                el.innerHTML = val.trim().replace(/\s*-\s*/g, '<br>');
+            }
+        }
+
+        function incrementCounter(id) {
+            const el = document.getElementById(id);
+            const current = parseInt(el.textContent, 10) || 0;
+            el.textContent = (current + 1) % 4;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+
+            const key = e.key.toLowerCase();
+            if (key === 'q') changeScore('red', 1);
+            if (key === 'w') changeScore('red', 2);
+            if (key === 'e') changeScore('red', -1);
+            if (key === 'r') changeScore('red', -2);
+
+            if (key === 'i') changeScore('blue', 1);
+            if (key === 'o') changeScore('blue', 2);
+            if (key === 'p') changeScore('blue', -1);
+            if (key === '[') changeScore('blue', -2);
+
+            if (e.code === 'Space') {
+                e.preventDefault();
+                toggleTimer();
+            }
+            if (key === 'b') playGong('single');
+        });
+    </script>
+</body>
+</html>
