@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -472,6 +472,39 @@
             border-color: #ffd700;
         }
 
+        /* Bá»˜ CHá»ŒN 2 HIá»†P HOáº¶C 3 HIá»†P CHÃNH */
+        .round-mode-group {
+            display: inline-flex;
+            background: #000000;
+            border: 1.5px solid #ffd700;
+            border-radius: 6px;
+            padding: 2px;
+            gap: 2px;
+        }
+
+        .btn-round-mode {
+            border: none;
+            background: transparent;
+            color: #9ca3af;
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-round-mode:hover {
+            color: #ffffff;
+        }
+
+        .btn-round-mode.active-mode {
+            background-color: #ffd700;
+            color: #000000;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.45);
+        }
+
         .btn-op.btn-start-op {
             background-color: #10b981;
             color: #ffffff;
@@ -686,7 +719,15 @@
             }
             .op-row {
                 gap: 4px;
-                flex-wrap: nowrap;
+                flex-wrap: wrap;
+            }
+            .round-mode-group {
+                padding: 1px;
+                gap: 1px;
+            }
+            .btn-round-mode {
+                padding: 3px 6px;
+                font-size: 0.65rem;
             }
             .btn-op {
                 padding: 4px 5px;
@@ -836,10 +877,15 @@
         <!-- Cụm điều khiển Hiệp, Giờ, Chuông, Reset -->
         <div class="center-op-controls">
             <div class="op-row">
+                <!-- Chọn 2 hiệp hoặc 3 hiệp chính -->
+                <div class="round-mode-group" title="Chọn số hiệp chính thi đấu">
+                    <button type="button" id="btnMode2Rounds" class="btn-round-mode" onclick="setMainRounds(2)">2 Hiệp</button>
+                    <button type="button" id="btnMode3Rounds" class="btn-round-mode active-mode" onclick="setMainRounds(3)">3 Hiệp</button>
+                </div>
                 <button id="roundPill1" class="btn-op active-pill" onclick="selectRound(1)">R1</button>
                 <button id="roundPill2" class="btn-op" onclick="selectRound(2)">R2</button>
                 <button id="roundPill3" class="btn-op" onclick="selectRound(3)">R3</button>
-                <button id="roundPill4" class="btn-op" onclick="selectRound(4)">⚡ Phụ</button>
+                <button id="roundPill4" class="btn-op" onclick="selectOvertime()">⚡ Phụ</button>
                 <button id="tabFight" class="btn-op active-pill" onclick="switchMode('fight')">Đấu</button>
                 <button id="tabBreak" class="btn-op" onclick="switchMode('break')">Nghỉ</button>
             </div>
@@ -870,6 +916,7 @@
         let scoreRed = 0;
         let scoreBlue = 0;
         let currentRound = 1;
+        let totalMainRounds = 3; // 2 hoặc 3 hiệp chính
         let currentMode = 'fight';
         let timeLeft = 120;
         let timerInterval = null;
@@ -1014,6 +1061,14 @@
 
         window.addEventListener('load', () => {
             try { loadBell(); } catch (e) {}
+            try {
+                const savedRounds = localStorage.getItem('vovinam_total_rounds');
+                if (savedRounds === '2') {
+                    setMainRounds(2);
+                } else {
+                    setMainRounds(3);
+                }
+            } catch (e) {}
         });
 
         // Hỗ trợ kích hoạt AudioContext ngay khi người dùng chạm lần đầu vào trang
@@ -1030,40 +1085,75 @@
             if (currentMode === 'break') {
                 return 'Break';
             }
-            if (currentRound <= 3) {
+            if (currentRound <= totalMainRounds) {
                 return `Round ${currentRound}`;
             }
-            const otNum = currentRound - 3;
+            const otNum = currentRound - totalMainRounds;
             return otNum === 1 ? 'Extra Rd' : `Extra Rd ${otNum}`;
         }
 
         function updateRoundUI() {
             for (let r = 1; r <= 3; r++) {
                 const pill = document.getElementById(`roundPill${r}`);
-                if (r === currentRound) {
-                    pill.classList.add('active-pill');
+                if (!pill) continue;
+                if (r > totalMainRounds) {
+                    pill.style.display = 'none';
                 } else {
-                    pill.classList.remove('active-pill');
+                    pill.style.display = '';
+                    if (r === currentRound) {
+                        pill.classList.add('active-pill');
+                    } else {
+                        pill.classList.remove('active-pill');
+                    }
                 }
             }
             const otPill = document.getElementById('roundPill4');
-            if (currentRound >= 4) {
-                otPill.classList.add('active-pill');
-                const otNum = currentRound - 3;
-                otPill.textContent = otNum === 1 ? '⚡ Phụ' : `⚡ Phụ ${otNum}`;
-            } else {
-                otPill.classList.remove('active-pill');
-                otPill.textContent = '⚡ Phụ';
+            if (otPill) {
+                if (currentRound > totalMainRounds) {
+                    otPill.classList.add('active-pill');
+                    const otNum = currentRound - totalMainRounds;
+                    otPill.textContent = otNum === 1 ? '⚡ Phụ' : `⚡ Phụ ${otNum}`;
+                } else {
+                    otPill.classList.remove('active-pill');
+                    otPill.textContent = '⚡ Phụ';
+                }
             }
 
             const titleEl = document.getElementById('roundTitleDisplay');
-            titleEl.textContent = getRoundLabel();
-            titleEl.className = 'round-title';
-            if (currentMode === 'break') {
-                titleEl.classList.add('break-mode');
-            } else if (currentRound >= 4) {
-                titleEl.classList.add('overtime-mode');
+            if (titleEl) {
+                titleEl.textContent = getRoundLabel();
+                titleEl.className = 'round-title';
+                if (currentMode === 'break') {
+                    titleEl.classList.add('break-mode');
+                } else if (currentRound > totalMainRounds) {
+                    titleEl.classList.add('overtime-mode');
+                }
             }
+        }
+
+        function setMainRounds(num) {
+            totalMainRounds = (num === 2) ? 2 : 3;
+            try {
+                localStorage.setItem('vovinam_total_rounds', totalMainRounds);
+            } catch (e) {}
+
+            const btn2 = document.getElementById('btnMode2Rounds');
+            const btn3 = document.getElementById('btnMode3Rounds');
+            if (btn2 && btn3) {
+                if (totalMainRounds === 2) {
+                    btn2.classList.add('active-mode');
+                    btn3.classList.remove('active-mode');
+                } else {
+                    btn2.classList.remove('active-mode');
+                    btn3.classList.add('active-mode');
+                }
+            }
+
+            updateRoundUI();
+        }
+
+        function selectOvertime() {
+            selectRound(totalMainRounds + 1);
         }
 
         function selectRound(roundNumber) {
@@ -1089,7 +1179,7 @@
             }
 
             // Hiệp phụ: Có điểm chênh lệch là kết thúc ngay lập tức
-            if (currentRound >= 4 && scoreRed !== scoreBlue) {
+            if (currentRound > totalMainRounds && scoreRed !== scoreBlue) {
                 endMatch(true);
                 return;
             }
@@ -1207,7 +1297,7 @@
 
         function handleTimeOut() {
             if (currentMode === 'fight') {
-                if (currentRound < 3) {
+                if (currentRound < totalMainRounds) {
                     playGong('triple');
                     switchMode('break');
                     startTimer(false);
@@ -1424,6 +1514,24 @@
                 toggleTimer();
             }
             if (key === 'b') playGong('single');
+
+            // Chá»n hiá»‡p Ä‘áº¥u:
+            if (key === '1') selectRound(1);
+            if (key === '2') selectRound(2);
+            if (key === '3') {
+                if (totalMainRounds === 3) selectRound(3);
+                else selectOvertime();
+            }
+            if (key === '4') selectOvertime();
+
+            // Cháº¿ Ä‘á»™ Äáº¥u (F) / Nghá»‰ (N)
+            if (key === 'f') switchMode('fight');
+            if (key === 'n') switchMode('break');
+
+            // Reset trận đấu (Delete / Backspace / X)
+            if (key === 'delete' || key === 'backspace' || key === 'x') {
+                resetMatch();
+            }
         });
     </script>
 </body>
