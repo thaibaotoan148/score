@@ -396,18 +396,21 @@
             grid-template-columns: 1fr 1.3fr 1fr;
             gap: 12px;
             align-items: center;
+            max-width: 100%;
+            overflow: hidden;
         }
 
         .side-op-controls {
             display: flex;
             gap: 8px;
+            min-width: 0;
         }
 
         .btn-op-score {
             flex: 1;
             padding: 12px 6px;
             font-size: 1.25rem;
-            font-weight: 800;
+            font-weight: 700;
             border-radius: 8px;
             border: 2px solid rgba(255, 255, 255, 0.35);
             color: #ffffff;
@@ -442,6 +445,7 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
+            min-width: 0;
         }
 
         .op-row {
@@ -454,9 +458,10 @@
 
         .btn-op {
             flex: 1;
+            min-width: 0;
             padding: 8px 10px;
-            font-size: 0.85rem;
-            font-weight: 800;
+            font-size: 0.82rem;
+            font-weight: 700;
             text-transform: uppercase;
             border: 1px solid #4b5563;
             border-radius: 6px;
@@ -475,8 +480,8 @@
         /* Bá»˜ CHá»ŒN 2 HIá»†P HOáº¶C 3 HIá»†P CHÃNH */
         .round-mode-group {
             display: inline-flex;
-            background: #000000;
-            border: 1.5px solid #ffd700;
+            background: #1f2937;
+            border: 1px solid #4b5563;
             border-radius: 6px;
             padding: 2px;
             gap: 2px;
@@ -486,12 +491,12 @@
             border: none;
             background: transparent;
             color: #9ca3af;
-            font-size: 0.8rem;
-            font-weight: 800;
-            padding: 6px 10px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 6px 9px;
             border-radius: 4px;
             cursor: pointer;
-            transition: all 0.15s ease;
             white-space: nowrap;
         }
 
@@ -502,7 +507,6 @@
         .btn-round-mode.active-mode {
             background-color: #ffd700;
             color: #000000;
-            box-shadow: 0 0 8px rgba(255, 215, 0, 0.45);
         }
 
         .btn-op.btn-start-op {
@@ -550,7 +554,7 @@
             border-radius: 6px;
             text-align: center;
             font-size: 1.05rem; /* >= 16px để iPhone không tự động zoom màn hình khi bấm vào nhập số */
-            font-weight: 800;
+            font-weight: 700;
             padding: 4px;
         }
 
@@ -559,26 +563,55 @@
             body {
                 padding: 4px 6px;
             }
+            .header-logo {
+                width: 28px;
+                height: 36px;
+            }
+            .tournament-title {
+                font-size: 1rem;
+                letter-spacing: 0.5px;
+            }
+            .match-number {
+                font-size: 0.78rem;
+                padding-left: 4px;
+            }
+            .weight-category {
+                font-size: 0.76rem;
+                line-height: 1.2;
+            }
+            .round-title {
+                font-size: 0.95rem;
+            }
+            .timer-digits {
+                font-size: 2.15rem;
+                letter-spacing: 1px;
+            }
             .arena-board {
-                grid-template-columns: 44px 1fr 1fr 44px;
+                grid-template-columns: 42px 1fr 1fr 42px;
                 min-height: 200px;
             }
             .bottom-status-bar {
-                grid-template-columns: 44px 1fr 1fr 64px;
+                grid-template-columns: 42px 1fr 1fr 62px;
             }
             .rf-row {
-                font-size: 0.72rem;
+                font-size: 0.74rem;
             }
             .clock-white-box {
-                min-width: 150px;
-                padding: 2px 12px 4px;
+                min-width: 145px;
+                padding: 3px 12px 4px;
             }
             .score-panel {
                 padding: 10px 8px;
             }
+            .main-score-number {
+                font-size: clamp(4.8rem, 22vw, 7.5rem);
+            }
+            .athlete-footer {
+                gap: 6px;
+            }
             .vn-flag {
-                width: 34px;
-                height: 22px;
+                width: 32px;
+                height: 21px;
             }
             .vn-flag span {
                 font-size: 0.85rem;
@@ -586,14 +619,73 @@
             .athlete-info {
                 padding-right: 0;
             }
+            .athlete-name {
+                font-size: 0.98rem;
+            }
+            .athlete-unit {
+                font-size: 0.78rem;
+            }
+            .foul-stats-box {
+                padding: 3px 6px 3px 2px;
+                font-size: 0.7rem;
+            }
+            .sq-box {
+                width: 13px;
+                height: 13px;
+            }
+            .btn-the-end {
+                padding: 8px 2px;
+                font-size: 0.72rem;
+            }
             .operator-console {
                 grid-template-columns: 1fr 1fr;
-                gap: 8px;
-                padding: 8px;
+                gap: 6px;
+                padding: 6px;
             }
             .center-op-controls {
                 grid-column: 1 / -1;
                 order: -1;
+                gap: 5px;
+            }
+            .side-op-controls {
+                gap: 4px;
+            }
+            .btn-op-score {
+                padding: 8px 2px;
+                font-size: 0.95rem;
+                border-radius: 6px;
+            }
+            .btn-minus-op {
+                font-size: 0.9rem;
+            }
+            .op-row {
+                gap: 4px;
+                flex-wrap: wrap;
+            }
+            .round-mode-group {
+                padding: 1px;
+                gap: 1px;
+                flex-shrink: 0;
+            }
+            .btn-round-mode {
+                padding: 5px 8px;
+                font-size: 0.76rem;
+            }
+            .btn-op {
+                padding: 6px 5px;
+                font-size: 0.76rem;
+            }
+            .time-input-mini {
+                width: 100%;
+                padding: 4px 8px;
+                gap: 6px;
+                font-size: 0.8rem;
+            }
+            .time-input-mini input {
+                width: 54px;
+                height: 28px;
+                font-size: 1rem;
+                padding: 2px;
             }
         }
 
@@ -699,9 +791,9 @@
             }
             .operator-console {
                 margin-top: 3px;
-                padding: 4px 6px;
-                grid-template-columns: 1fr 1.55fr 1fr;
-                gap: 6px;
+                padding: 3px 5px;
+                grid-template-columns: 0.9fr 1.8fr 0.9fr;
+                gap: 5px;
             }
             .side-op-controls {
                 gap: 4px;
@@ -726,22 +818,22 @@
                 gap: 1px;
             }
             .btn-round-mode {
-                padding: 3px 6px;
-                font-size: 0.65rem;
+                padding: 3px 5px;
+                font-size: 0.66rem;
             }
             .btn-op {
-                padding: 4px 5px;
-                font-size: 0.68rem;
+                padding: 3px 4px;
+                font-size: 0.66rem;
             }
             .time-input-mini {
-                padding: 2px 6px;
-                gap: 4px;
-                font-size: 0.7rem;
+                padding: 1px 4px;
+                gap: 3px;
+                font-size: 0.66rem;
             }
             .time-input-mini input {
-                width: 46px;
-                height: 24px;
-                font-size: 1rem;
+                width: 38px;
+                height: 22px;
+                font-size: 0.78rem;
                 padding: 1px;
             }
         }
@@ -885,14 +977,14 @@
                 <button id="roundPill1" class="btn-op active-pill" onclick="selectRound(1)">R1</button>
                 <button id="roundPill2" class="btn-op" onclick="selectRound(2)">R2</button>
                 <button id="roundPill3" class="btn-op" onclick="selectRound(3)">R3</button>
-                <button id="roundPill4" class="btn-op" onclick="selectOvertime()">⚡ Phụ</button>
+                <button id="roundPill4" class="btn-op" onclick="selectOvertime()">Phụ</button>
                 <button id="tabFight" class="btn-op active-pill" onclick="switchMode('fight')">Đấu</button>
                 <button id="tabBreak" class="btn-op" onclick="switchMode('break')">Nghỉ</button>
             </div>
             <div class="op-row">
-                <button id="btnStartPause" class="btn-op btn-start-op" onclick="toggleTimer()">▶ BẮT ĐẦU</button>
-                <button class="btn-op btn-bell-op" onclick="playGong('single')">🔔 CHUÔNG</button>
-                <button class="btn-op btn-reset-op" onclick="resetMatch()">🔄 RESET</button>
+                <button id="btnStartPause" class="btn-op btn-start-op" onclick="toggleTimer()">Bắt đầu</button>
+                <button class="btn-op btn-bell-op" onclick="playGong('single')">Chuông</button>
+                <button class="btn-op btn-reset-op" onclick="resetMatch()">Reset</button>
                 <div class="time-input-mini">
                     <span>Đấu:</span>
                     <input type="number" id="fightSecondsInput" value="120" min="5" max="600" onchange="updateConfiguredTime()">
@@ -1112,10 +1204,10 @@
                 if (currentRound > totalMainRounds) {
                     otPill.classList.add('active-pill');
                     const otNum = currentRound - totalMainRounds;
-                    otPill.textContent = otNum === 1 ? '⚡ Phụ' : `⚡ Phụ ${otNum}`;
+                    otPill.textContent = otNum === 1 ? 'Phụ' : `Phụ ${otNum}`;
                 } else {
                     otPill.classList.remove('active-pill');
-                    otPill.textContent = '⚡ Phụ';
+                    otPill.textContent = 'Phụ';
                 }
             }
 
@@ -1243,7 +1335,7 @@
                 timeLeft = parseInt(document.getElementById('breakSecondsInput').value, 10) || 60;
             }
 
-            btn.innerHTML = '▶ BẮT ĐẦU';
+            btn.textContent = 'Bắt đầu';
             btn.className = 'btn-op btn-start-op';
 
             updateRoundUI();
@@ -1278,7 +1370,7 @@
             }
 
             const btn = document.getElementById('btnStartPause');
-            btn.innerHTML = '⏸ TẠM DỪNG';
+            btn.textContent = 'Tạm dừng';
             btn.className = 'btn-op btn-pause-op';
 
             timerInterval = setInterval(() => {
@@ -1322,7 +1414,7 @@
             isRunning = false;
             isPausedMidRound = true; // Đánh dấu đang tạm dừng giữa hiệp
             const btn = document.getElementById('btnStartPause');
-            btn.innerHTML = '▶ TIẾP TỤC';
+            btn.textContent = 'Tiếp tục';
             btn.className = 'btn-op btn-start-op';
             document.getElementById('timerDisplay').classList.remove('urgent');
         }
@@ -1353,7 +1445,7 @@
                 updateTimerDisplay();
             }
 
-            btnStartPause.innerHTML = timeLeft > 0 ? '▶ TIẾP TỤC' : '▶ BẮT ĐẦU';
+            btnStartPause.textContent = timeLeft > 0 ? 'Tiếp tục' : 'Bắt đầu';
             btnStartPause.className = 'btn-op btn-start-op';
         }
 
@@ -1382,7 +1474,7 @@
             const btn = document.getElementById('btnStartPause');
             const btnEnd = document.getElementById('btnEndMatch');
 
-            btn.innerHTML = '▶ BẮT ĐẦU';
+            btn.textContent = 'Bắt đầu';
             btn.className = 'btn-op btn-start-op';
             document.getElementById('timerDisplay').classList.remove('urgent');
 
@@ -1469,7 +1561,7 @@
             document.querySelectorAll('.btn-op-score').forEach(b => b.disabled = false);
 
             const btn = document.getElementById('btnStartPause');
-            btn.innerHTML = '▶ BẮT ĐẦU';
+            btn.textContent = 'Bắt đầu';
             btn.className = 'btn-op btn-start-op';
 
             const btnEnd = document.getElementById('btnEndMatch');
